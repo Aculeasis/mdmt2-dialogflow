@@ -22,7 +22,7 @@ class Main(threading.Thread):
     def __init__(self, cfg, log, owner):
         self.cfg, self.log, self.own = cfg, log, owner
         self.disable = True
-        self._err_cont = 0
+        self._err_count = 0
         self._queue = queue.Queue()
 
         file = os.path.join(self.cfg.path['data'], self.CREDENTIALS)
@@ -60,7 +60,7 @@ class Main(threading.Thread):
             self._queue.put_nowait((self.QRY, msg))
 
     def run(self):
-        while self._err_cont < self.MAX_ERRORS:
+        while self._err_count < self.MAX_ERRORS:
             cmd, data = self._queue.get()
             if cmd is None:
                 break
@@ -73,13 +73,13 @@ class Main(threading.Thread):
             query_input = dialogflow.types.QueryInput(text=text_input)
             response = self._client.detect_intent(self._session, query_input)
         except Exception as e:
-            self._err_cont += 1
+            self._err_count += 1
             self.log('Processing error: {}'.format(e), logger.ERROR)
-            if self._err_cont >= self.MAX_ERRORS:
+            if self._err_count >= self.MAX_ERRORS:
                 self.log('Detected many errors [{}]. Bye!', logger.CRIT)
             return
         else:
-            self._err_cont = 0
+            self._err_count = 0
 
         try:
             result = response.query_result.fulfillment_text
