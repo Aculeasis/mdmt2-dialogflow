@@ -1,7 +1,7 @@
-# Dialogflow for mdmTerminal2
-Направляет запросы в [Dialogflow](https://dialogflow.cloud.google.com/) и проговаривает ответы.
+## Dialogflow for mdmTerminal2
+Направляет запросы в [Dialogflow](https://dialogflow.cloud.google.com/).
 
-# Установка
+## Установка
 ### Только для armv6l (Raspberry Pi Zero W)
 Перед установкой нужно собрать пакет `grpcio` из исходников, установка бинарного пакета приведет к ошибке **Illegal Instruction** [issue#235](https://github.com/googlesamples/assistant-sdk-python/issues/235):
 ```
@@ -19,9 +19,13 @@ git clone https://github.com/Aculeasis/mdmt2-dialogflow
 ```
 И перезапустить [терминал](https://github.com/Aculeasis/mdmTerminal2).
 
-# Настройки
+## Настройки
 Можно отключить интеграцию с MJD в `settings.ini`:
 ```ini
 [smarthome]
 disable_http = on
 ```
+
+## Использование
+Плагин только проговаривает `fulfillment_text` или переспрашивает с ним (если `all_required_params_present == False`).
+Если нужна обработка сценариев, то лучше всего форкнуть репозиторий и реализовать ее [самостоятельно](https://github.com/Aculeasis/mdmt2-dialogflow/blob/master/main.py#L91).
