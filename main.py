@@ -8,6 +8,12 @@ import dialogflow_v2 as dialogflow
 import logger
 from languages import LANG_CODE
 
+try:
+    from query_result import QueryResult
+except ImportError:
+    from .query_result import QueryResult
+
+
 NAME = 'dialogflow'
 API = 665
 TERMINAL_VER_MIN = (0, 15, 30)
@@ -80,10 +86,11 @@ class Main(threading.Thread):
             return
         else:
             self._err_count = 0
+        self.entrypoint(QueryResult(response.query_result))
 
-        try:
-            result = response.query_result.fulfillment_text
-        except AttributeError:
-            result = ''
-        if result:
-            self.own.terminal_call('tts', result)
+    def entrypoint(self, result: QueryResult):
+        # print(result.pretty())
+        cmd = 'tts' if result.all_required_params_present else 'ask'
+        self.log('Action: {}, CMD: {}, text: {}'.format(result.action, cmd, result.fulfillment_text))
+        if result.fulfillment_text:
+            self.own.terminal_call(cmd, result.fulfillment_text)
